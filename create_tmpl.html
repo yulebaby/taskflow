@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="css/reset.css">
+  <title>创建模板</title>
+  <link rel="stylesheet" href="css/taskflow.css">
+  <script src="js/vue.min.js"></script>
+  <script src="js/jquery.min.js"></script>
+  <script src="js/go.js"></script>
+  <script src="js/tmpl_diagram.js"></script>
+</head>
+<body onload="init()">
+  <div id="gojs" :class="{active: contentShow}">
+    <a href="javascript: void(0);" @click="save" style="display: block; padding: 3px 10px;position: fixed;border-radius: 5px; z-index: 999; bottom: 10px; left: 10px; color: #666; font-size: 14px; border: solid 1px #ccc; background: #fff">保存</a>
+    <div class="go-header">
+      <h1>创建任务</h1>
+    </div>
+    <!-- 模板 -->
+    <div class="go-palette" id="palette"></div>
+    <!-- 画布 -->
+    <div class="go-diagram">
+      <div id="myDiagramDiv"></div>
+    </div>
+    <!-- 任务属性 -->
+    <div class="task-properties">
+      <h2>编辑任务属性
+          <a href="javascript: void(0);" class="hide-proper" @click="contentShow = false">取消</a></h2>
+      <div class="task-proper-cell">
+        <div>
+          <ul>
+            <li class="active"><label for="task">任务名称</label><input type="text" id="task" v-model="content.step.task"></li>
+            <li v-show="!isThread"><label for="planDays">任务天数</label><input onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')" type="text" id="planDays" v-model="content.step.planDays"></li>
+            <li v-show="!isThread">
+              <!-- <label for="workDetail">工作内容</label><textarea id="workDetail" v-model="content.stepInfo.workDetail"></textarea> -->
+              <label for="workDetail">注意事项</label><textarea id="workDetail" v-model="content.stepInfo.workDetail"></textarea>
+            </li>
+            <li v-show="!isThread">
+              <label for="weChatWords">微信文案</label><textarea id="weChatWords" v-model="content.stepInfo.weChatWords"></textarea>
+            </li>
+            <li v-show="!isThread">
+              <label for="phoneWords">电话话术</label><textarea id="phoneWords" v-model="content.stepInfo.phoneWords"></textarea>
+            </li>
+            <!-- <li v-show="!isThread"><label for="remark">注意事项</label><textarea id="remark" v-model="content.stepInfo.remark"></textarea></li> -->
+            <li v-show="!isThread" class="file-box">
+              <div>
+                <label for="">发送材料</label>
+                <ul v-if="content.stepInfo.sendFile">
+                  <li v-for="(item, index) in content.stepInfo.sendFile.split('&&')" v-if="item">
+                    <a :href="item | split(1, '||')" target="_blank">{{item | split(0, '||')}}</a>
+                    <p @click="deleteFile(index)">删除</p>
+                  </li>
+                </ul>
+              </div>
+              <label for="sendFile">
+                添加文件<input type="file" style="display: none;" id="sendFile" @change="upfile('sendFile')">
+              </label>
+            </li>
+            <li v-show="!isThread">
+              <label for="receiveFile">反馈材料</label><textarea id="receiveFile" v-model="content.stepInfo.receiveFile"></textarea>
+            </li>
+          </ul>
+        </div>
+        <div>
+          <a href="javascript: void(0);" @click="nodeSave">保存</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+<script src="js/create_tmpl.js"></script>

@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="css/reset.css">
+  <title>查看进度</title>
+  <link rel="stylesheet" href="css/taskflow.css">
+  <script src="js/vue.min.js"></script>
+  <script src="js/jquery.min.js"></script>
+  <script src="js/go.js"></script>
+  <script src="js/view_diagram.js"></script>
+</head>
+<body onload="init()">
+  <div id="gojs" class="active">
+    <div class="go-header">
+      <h1>筹备详情</h1>
+    </div>
+    <div class="progress-box">
+      <h2>{{shopProgress.shopName}}</h2>
+      <div class="progress-cell">
+        <ul>
+          <li v-for="item in shopProgress.step" :class="{active: item.status == 2}">
+            <p>{{item.stepTask}}</p>
+          </li>
+        </ul>
+      </div>
+      <div class="progress-details">
+        <p><b>{{shopProgress.planSchedule}}</b>任务进度</p>
+        <p><b>{{shopProgress.nowSchedule}}</b>实际进度</p>
+        <p><b>{{shopProgress.startDate}}</b>开始时间</p>
+        <p><b>{{shopProgress.planDate}}</b>预计完成</p>
+      </div>
+    </div>
+    <!-- 状态说明 -->
+    <div class="progress-status">
+      <ui>
+        <li class="completed">已完成</li>
+        <li class="conducc">进行中</li>
+        <li class="delay">延期中</li>
+        <li class="unfinished">未开始</li>
+      </ui>
+    </div>
+    <!-- 画布 -->
+    <div class="go-diagram active">
+      <div id="myDiagramDiv"></div>
+    </div>
+    <!-- 任务属性 -->
+    <div class="task-properties">
+      <h2>
+        任务详情
+      </h2>
+      <div class="task-proper-cell" v-show="isBranch">
+        <div>
+          <ul>
+            <li class="active"><label for="task">任务名称</label><input type="text" id="task" disabled v-model="content.step.task"></li>
+            <li v-show="!isStartCom && !isEndCom"><label for="planStart">计划开始</label><input type="text" v-model="content.step.planStart" readonly id="planStart" disabled></li>
+            <li v-show="!isStartCom && !isEndCom"><label for="planComplete">计划完成</label><input type="text" v-model="content.step.planComplete" readonly id="planComplete" disabled></li>
+
+
+            <li v-show="isStartCom && content.step.planComplete"><label for="planStart">开始时间</label><input type="text" v-model="content.step.planComplete" disabled></li>
+
+
+            <li v-show="isEndCom">
+              <label for="">结束时间</label>
+              <input type="button" @click="clickTime(0)" value="点击结束任务" v-show="!(content.step.completeDate.length > 0)">
+              <input type="text" v-model="content.step.completeDate" disabled v-show="content.step.completeDate.length > 0">
+            </li>
+
+
+          </ul>
+        </div>
+        <div v-show="isStartCom">
+          <a href="javascript: ;" v-show="!content.step.planComplete" @click="nodeSave(true)">点击开始任务</a>
+        </div>
+      </div>
+      <div class="task-proper-cell" v-show="contentShow">
+        <div>
+          <ul>
+              <!-- isStartCom -->
+            <li class="active"><label for="task">任务名称</label><input type="text" id="task" disabled v-model="content.step.task"></li>
+            <li v-show="isEndCom"><label for="planCompleteTwo">任务完成</label><input type="text" v-model="content.step.completeDate" readonly id="planCompleteTwo"><img src="images/time.png" alt=""></li>
+            <li v-show="!isStartCom && !isEndCom"><label for="planDays">任务天数</label><input type="text" id="planDays" disabled v-model="content.step.planDays"></li>
+
+            <li v-show="!isStartCom && !isEndCom">
+              <label for="workDetail">注意事项</label><textarea id="workDetail" disabled v-model="content.stepInfo.workDetail"></textarea>
+            </li>
+
+
+            <li v-show="!isStartCom && !isEndCom && value.length" v-for="(value, key) in content.stepInfo.weChatWords.split('||')">
+              <label for="weChatWords">微信文案{{key + 1}}</label><textarea id="weChatWords" disabled :value="value"></textarea>
+              <textarea style="position: fixed; top: -9999px; left: -9999px;" readonly>{{value}}</textarea>
+              <div class="top-border"><p><a href="javascript: void(0);" class="copy">复制</a></p></div>
+            </li>
+
+
+
+            <li v-show="!isStartCom && !isEndCom">
+              <label for="phoneWords">电话话术</label><textarea id="phoneWords" disabled v-model="content.stepInfo.phoneWords"></textarea>
+            </li>
+
+
+            <li v-show="!isStartCom && !isEndCom" class="file-box">
+              <div style="border:0">
+                <label for="">发送材料</label>
+                <ul v-if="content.stepInfo.sendFile">
+                  <li v-for="(item, index) in content.stepInfo.sendFile.split('&&')" v-if="item">
+                    <a :href="item.split('||')[1]" target="_blank">{{item.split('||')[0]}}</a>
+                  </li>
+                </ul>
+              </div>
+            </li>
+
+            <li v-show="!isStartCom && !isEndCom"><label for="planStart">计划开始</label><input type="text" v-model="content.step.planStart" readonly id="planStart" disabled></li>
+
+            <!-- 新增阶段文件 -->
+
+            <li v-show="!isStartCom && !isEndCom" class="file-box">
+              <div>
+                <label for="">阶段材料</label>
+                <ul v-if="content.stepInfo.periodResult">
+                  <li v-for="(item, index) in content.stepInfo.periodResult.split('&&')" v-if="item">
+                    <a :href="item | split(1, '||')" target="_blank">{{item | split(0, '||')}}</a>
+                    <p @click="deleteFile(index)">删除</p>
+                  </li>
+                </ul>
+              </div>
+              <label for="periodResult">
+                添加文件<input type="file" style="display: none;" id="periodResult" @change="upfile('periodResult')">
+              </label>
+            </li>
+
+            <!-- 新增阶段文件 end -->
+
+            <li v-show="!isStartCom && !isEndCom">
+              <label for="">完成截图</label>
+              <div class="screenshot" id="editable" :contenteditable="!content.stepInfo.screenshot">
+                <a target="_blank" v-if="content.stepInfo.screenshot" :href="content.stepInfo.screenshot"><img :src="content.stepInfo.screenshot"></a>
+                <div class="newup" v-if="content.stepInfo.screenshot">重新上传</div>
+              </div>
+            </li>
+            <li v-if="content.step.completeDate"><label for="task">实际完成</label><input type="text" id="task" disabled v-model="content.step.completeDate"></li>
+
+            <li v-show="!isStartCom && !isEndCom"><label for="planComplete">计划完成</label><input type="text" v-model="content.step.planComplete" readonly id="planComplete" disabled></li>
+
+            <!-- 筹建 start -->
+            <li v-show="isOrder">
+              <div style="overflow: hidden;"><label for="">筹建协助工单</label></div>
+              <a href="javascript:;" class="create-btn" v-show="!orderItemDetails" @click="createOrderBtn">发起{{isOrder == 1 ? '水电交底' : isOrder == 2 ? '水电验收' : '设备安装'}}工单</a>
+              <div class="order-items" v-if="orderItemDetails">
+                <h2>工单记录</h2>
+                <h4>
+                  <span>{{ orderItemDetails.createTime | format1('yyyy-MM-dd') }}</span>
+                  <a href="javascript:;" @click="openOrder">工单详情</a>
+                </h4>
+                <ul>
+                  <li><h6>工单类别</h6><p>{{orderItemDetails.projectName}}</p></li>
+                  <li><h6>接&nbsp;&nbsp;收&nbsp;&nbsp;人</h6><p>{{orderItemDetails.receptionName}}</p></li>
+                  <li><h6>状&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;态</h6><p>{{orderItemDetails.status == 0 ? '待处理' : orderItemDetails.status == 1 ? '进行中' : orderItemDetails.status == 2 ? '拒绝' : '完成'}}</p></li>
+                  <li><h6>期望完成</h6><p>{{orderItemDetails.expectTimeStart | format('yyyy-MM-dd')}} 至 {{orderItemDetails.expectTime | format('yyyy-MM-dd')}}</p></li>
+                  <li><h6>实际完成</h6><p>{{orderItemDetails.completeTime | format1('yyyy-MM-dd')}}</p></li>
+                  <li v-if="orderItemDetails.status != 0 && orderItemDetails.status != 1 && orderItemDetails.status != 2"><h6>完成详情</h6><p><a href="javascript:;" @click="openOrder">查看</a></p></li>
+                </ul>
+              </div>
+            </li>
+            <!-- 筹建 end -->
+          </ul>
+        </div>
+        <div>
+          <a href="javascript: ;" @click="nodeSave(true)">{{isStartCom ? '点击开始任务' : '保存'}}</a>
+        </div>
+      </div>
+      <div class="task-proper-cell" v-show="!contentShow && !isBranch"><div style="line-height: 500px; text-align: center; font-size: 16px; color: #999;">请点击左侧任务节点，查看任务详情</div></div>
+    </div>
+
+    <!-- 创建工单 -->
+    <div class="work-order-box" :class="{active: showCreate}">
+      <div class="work-order-main">
+        <h2>新建工单</h2>
+        <div class="work-order-close" @click="showCreate = false;">X</div>
+        <div class="create-order-form">
+          <ul>
+            <li>
+              <label for="">合同编号</label>
+              <input type="text" disabled v-model="orderDetails.baseInfo.contractNo">
+            </li>
+            <li>
+              <label for="">工单名称</label>
+              <input type="text" disabled v-model="orderDetails.baseInfo.storeName">
+            </li>
+            <li>
+              <label for="">联系人</label>
+              <input type="text" disabled v-model="orderDetails.baseInfo.contractName">
+            </li>
+            <li>
+              <label for="">工单类别</label>
+              <input type="text" disabled v-model="orderDetails.projectName">
+            </li>
+            <li>
+              <label for="">接收人</label>
+              <select v-model="orderDetails.receptionId">
+                <option v-for="option in orderDetails.personList" :value="option.userId">{{ option.userName }}</option>
+              </select>
+            </li>
+            <li>
+              <label for="">期望完成</label>
+              <input type="text" readonly id="expectTimeStart" v-model="orderDetails.expectTimeStart">&nbsp;&nbsp;至&nbsp;&nbsp;<input type="text" readonly id="expectTime" v-model="orderDetails.expectTime">
+            </li>
+            <li>
+              <label for="">工单描述</label>
+              <textarea v-model="orderDetails.describeContext"></textarea>
+            </li>
+            <li>
+              <label for=""></label>
+              <a href="javascript:;" class="btn-submit" @click="submitOrder">{{ submitOrderLoading ? '提交中...' : '确定'}}</a>
+              <a href="javascript:;" class="btn-close" @click="showCreate = false;">取消</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+<style>
+  .create-btn{display: block;width: 260px; margin: 20px auto;color: #fff;line-height: 40px;text-align: center;border-radius: 5px;background: #00b0cc;text-decoration: none;}
+  .order-items h2{font-size: 16px; color: #333;margin-bottom: 20px;}
+  .order-items h4{font-size: 14px; text-indent: 10px; border-left: solid 5px #00b0cc; height: 28px; line-height: 28px; margin-bottom: 10px;}
+  .order-items h4 a{float: right;color: #2a9edb;}
+  .order-items ul li{line-height: 28px; overflow: hidden; padding-left: 24px;}
+  .order-items ul li h6{float: left; font-size: 14px; color: #afaeae; padding-right: 12px; width: 70px;}
+  .order-items ul li p{float: left; font-size: 14px; color: #333;}
+  .order-items ul li p a{color: #2a9edb;}
+  .work-order-box{width: 100%; height: 100%; position: fixed; top: 0; left: 0; z-index: 99; background: rgba(0, 0, 0, .2); visibility: hidden; opacity: 0; transition: all .25s; transform: translate3d(0,-10px, 0)}
+  .work-order-box.active{visibility: visible; opacity: 1; transform: none;}
+  .work-order-main{width: 780px; border-radius: 5px; border: solid 1px #ccc; background: #fff; position: relative; top: 50%; left: 50%; margin-left: -390px; margin-top: -300px;}
+  .work-order-main h2{font-size: 18px; text-align: center; line-height: 50px; border-bottom: solid 1px #ccc;}
+  .create-order-form{padding: 20px 40px;}
+  .create-order-form li{ margin-bottom: 15px; position: relative; padding-left: 78px;}
+  .create-order-form li label{display: block; line-height: 35px; position: absolute; top: 0; left: 0; font-size: 14px; color: #999;}
+  .create-order-form li input,.create-order-form select, .create-order-form li textarea{border: solid 1px #ccc; width: 200px; border-radius: 5px; padding: 5px 12px; display: inline-block; height: 35px; outline: none;}
+  .create-order-form li textarea{width: 570px; height: 60px;}
+  .create-order-form li input[disabled]{background: #f5f5f5;}
+  .create-order-form li > a {display: inline-block;height: 35px; line-height: 35px; margin-right: 15px; border-radius: 5px; padding: 0 20px; font-size: 14px;}
+  .btn-submit{background: #417bf6; color: #fff;}
+  .btn-close{background: #eee; border: solid 1px #ccc;}
+  .work-order-close{position: absolute; top: 0; right: 0; width: 50px; height: 50px; color: #999; font-size: 20px; text-align: center; line-height: 50px; cursor: pointer;}
+  .work-order-close:hover{color: #666;}
+</style>
+</body>
+</html>
+<script src="js/view_progress.js"></script>
+<script src="js/laydate/laydate.js"></script>
+<script>
+laydate({
+  elem: '#planCompleteTwo', 
+  format: 'YYYY-MM-DD hh:mm:ss',
+  istime: true, //必须填入时间  
+  istoday: false,  //是否是当天  
+  choose: function(datas){
+    vm.content.step.completeDate = datas;
+  }
+})
+
+laydate({
+  elem: '#expectTimeStart',
+  format: 'YYYY-MM-DD',
+  istime: true, //必须填入时间  
+  istoday: false,  //是否是当天  
+  min: laydate.now(),
+  choose: function (datas) {
+    vm.orderDetails.expectTimeStart = datas;
+  }
+})
+laydate({
+  elem: '#expectTime',
+  format: 'YYYY-MM-DD',
+  istime: true, //必须填入时间  
+  istoday: false,  //是否是当天  
+  min: laydate.now(),
+  choose: function (datas) {
+    vm.orderDetails.expectTime = datas;
+  }
+})
+  
+
+function timeStart (elem, nums) {
+  return {
+    elem: elem, //选择ID为START的input  
+    format: 'YYYY-MM-DD hh:mm:ss', //自动生成的时间格式  
+    // max: laydate.now(), //最大日期  
+    istime: true, //必须填入时间  
+    istoday: false,  //是否是当天  
+    choose: function(datas){
+      vm.content.step.startDate = datas;
+      window[nums].min = datas; //开始日选好后，重置结束日的最小日期
+      window[nums].start = datas //将结束日的初始值设定为开始日  
+    }
+  }
+}
+function timeEnd (elem, nums) {
+  return {
+    elem: elem,  
+    format: 'YYYY-MM-DD hh:mm:ss',
+    // max: laydate.now(),  
+    istime: true,  
+    istoday: false,    
+    choose: function(datas){
+      vm.content.step.completeDate = datas;
+      window[nums].max = datas; //结束日选好后，重置开始日的最大日期  
+    }  
+  }
+}
+$('body').on('click', '.copy', function () {
+  var _this = $(this);
+  var _copy = _this.closest('.top-border').siblings('textarea');
+  _copy.trigger('select');
+  document.execCommand('copy');
+  alert('复制成功')
+})
+</script>

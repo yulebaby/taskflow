@@ -1,0 +1,378 @@
+html,
+body,
+#gojs {
+  width: 100%;
+  height: 100%;
+  overflow: hidden; }
+
+body {
+  background: #f9f9f9; }
+
+#gojs.active .go-header,
+#gojs.active .progress-box {
+  padding-right: 400px; }
+
+#gojs.active .go-palette {
+  -webkit-transform: translate3d(-400px, 0, 0);
+  -moz-transform: translate3d(-400px, 0, 0);
+  -ms-transform: translate3d(-400px, 0, 0);
+  transform: translate3d(-400px, 0, 0); }
+
+#gojs.active .go-diagram {
+  -webkit-transform: translate3d(-400px, 0, 0);
+  -moz-transform: translate3d(-400px, 0, 0);
+  -ms-transform: translate3d(-400px, 0, 0);
+  transform: translate3d(-400px, 0, 0); }
+
+#gojs.active .task-properties {
+  -webkit-transform: none;
+  -moz-transform: none;
+  -ms-transform: none;
+  transform: none; }
+
+.go-header {
+  width: 100%;
+  height: 80px;
+  background: #f9f9f9;
+  border-bottom: solid 1px #ececec;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9;
+  -webkit-transition: all 0.25s;
+  -o-transition: all 0.25s;
+  transition: all 0.25s; }
+  .go-header > h1 {
+    float: left;
+    font-size: 20px;
+    color: #7688b6;
+    line-height: 80px;
+    text-indent: 40px;
+    font-weight: bold; }
+  .go-header .node-stat {
+    float: right; }
+    .go-header .node-stat ul {
+      padding-top: 18px;
+      height: 80px; }
+    .go-header .node-stat li {
+      float: left;
+      margin: 0 10px;
+      padding: 15px 20px;
+      color: #fff;
+      font-size: 14px;
+      line-height: 14px;
+      border-radius: 5px; }
+      .go-header .node-stat li.task-start {
+        background: #417bf6; }
+      .go-header .node-stat li.task-main {
+        background: #01a6ff; }
+      .go-header .node-stat li.task-from {
+        background: #ffc51c; }
+      .go-header .node-stat li.task-end {
+        background: #ffdc2a; }
+
+.go-palette {
+  width: 1260px;
+  height: 60px;
+  position: fixed;
+  top: 10px;
+  right: 0;
+  z-index: 10;
+  overflow: hidden;
+  -webkit-transition: all 0.25s;
+  -o-transition: all 0.25s;
+  transition: all 0.25s; }
+
+.go-diagram {
+  height: 100%;
+  padding-top: 80px;
+  background: #fff;
+  position: relative;
+  -webkit-transition: all 0.25s;
+  -o-transition: all 0.25s;
+  transition: all 0.25s; }
+  .go-diagram.active {
+    padding-top: 260px; }
+  .go-diagram #myDiagramDiv {
+    height: 100%; }
+
+.task-properties {
+  width: 400px;
+  height: 100%;
+  background: #f2f2f2;
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 11;
+  -webkit-transform: translate3d(400px, 0, 0);
+  -moz-transform: translate3d(400px, 0, 0);
+  -ms-transform: translate3d(400px, 0, 0);
+  transform: translate3d(400px, 0, 0);
+  -webkit-transition: all 0.25s;
+  -o-transition: all 0.25s;
+  transition: all 0.25s; }
+  .task-properties > h2 {
+    width: 100%;
+    height: 80px;
+    color: #7688b6;
+    font-size: 20px;
+    line-height: 80px;
+    font-weight: bold;
+    text-indent: 30px;
+    background: #f9f9f9;
+    border-left: solid 1px #ececec;
+    border-bottom: solid 1px #ececec;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 11; }
+  .task-properties .task-proper-cell {
+    padding: 0 10px;
+    padding-top: 80px;
+    height: 100%;
+    overflow-y: auto; }
+    .task-properties .task-proper-cell > div > ul > li {
+      padding: 12px;
+      margin-bottom: 10px;
+      color: #7688b6;
+      background: #fff;
+      box-shadow: 0 0 3px #eee;
+      position: relative;
+      overflow: hidden; }
+      .task-properties .task-proper-cell > div > ul > li .top-border {
+        clear: both;
+        overflow: hidden; }
+        .task-properties .task-proper-cell > div > ul > li .top-border p {
+          text-align: center;
+          margin-top: 10px;
+          padding-top: 10px;
+          border-top: dashed 2px #c7ced8; }
+          .task-properties .task-proper-cell > div > ul > li .top-border p a {
+            display: inline-block;
+            width: 100px;
+            line-height: 40px;
+            color: #7688b6;
+            text-align: center;
+            font-weight: none;
+            border-radius: 10px;
+            border: solid 1px #7688b6;
+            -webkit-transition: all 0.25s;
+            -o-transition: all 0.25s;
+            transition: all 0.25s; }
+            .task-properties .task-proper-cell > div > ul > li .top-border p a:hover {
+              color: #fff;
+              background: #7688b6; }
+      .task-properties .task-proper-cell > div > ul > li > img {
+        width: 20px;
+        position: absolute;
+        right: 20px;
+        top: 20px;
+        pointer-events: none; }
+      .task-properties .task-proper-cell > div > ul > li.active {
+        padding-left: 8px;
+        border-left: solid 4px #417bf8; }
+      .task-properties .task-proper-cell > div > ul > li label {
+        display: block;
+        float: left;
+        line-height: 40px;
+        font-size: 14px;
+        font-weight: bold;
+        vertical-align: top; }
+      .task-properties .task-proper-cell > div > ul > li input,
+      .task-properties .task-proper-cell > div > ul > li textarea,
+      .screenshot {
+        display: block;
+        float: right;
+        width: 270px;
+        outline: none;
+        border-radius: 5px;
+        border: solid 1px #c3c3cb;
+        resize: none; }
+        .task-properties .task-proper-cell > div > ul > li input[disabled],
+        .task-properties .task-proper-cell > div > ul > li textarea[disabled] {
+          border: none;
+          background: #f9f9f9; }
+      .task-properties .task-proper-cell > div > ul > li input {
+        height: 40px;
+        padding: 0 10px; }
+      .task-properties .task-proper-cell > div > ul > li textarea {
+        height: 100px;
+        padding: 10px; }
+    .task-properties .task-proper-cell .file-box ul {
+      float: right;
+      width: 280px;
+      font-size: 14px;
+      line-height: 40px; }
+      .task-properties .task-proper-cell .file-box ul li {
+        height: 40px; }
+        .task-properties .task-proper-cell .file-box ul li a {
+          color: #2a9edb; }
+        .task-properties .task-proper-cell .file-box ul li p {
+          float: right;
+          color: #d51730;
+          cursor: pointer; }
+    .task-properties .task-proper-cell .file-box > div {
+      overflow: hidden;
+      border-bottom: dashed 2px #c7ced8; }
+    .task-properties .task-proper-cell .file-box > label {
+      display: block;
+      width: 100px;
+      height: 40px;
+      color: #7688b6;
+      line-height: 40px;
+      text-align: center;
+      font-weight: none;
+      border-radius: 10px;
+      border: solid 1px #7688b6;
+      margin: 10px 0 5px 125px;
+      cursor: pointer;
+      -webkit-transition: all 0.25s;
+      -o-transition: all 0.25s;
+      transition: all 0.25s; }
+      .task-properties .task-proper-cell .file-box > label:hover {
+        color: #fff;
+        background: #7688b6; }
+    .task-properties .task-proper-cell > div {
+      overflow: hidden; }
+    .task-properties .task-proper-cell > div > a {
+      display: block;
+      color: #fff;
+      line-height: 40px;
+      text-align: center;
+      border-radius: 5px;
+      background: #417bf6;
+      text-decoration: none;
+      margin-bottom: 40px;
+      -webkit-transition: all 0.25s;
+      -o-transition: all 0.25s;
+      transition: all 0.25s; }
+      .task-properties .task-proper-cell > div > a:hover {
+        opacity: .8; }
+
+.progress-box {
+  width: 100%;
+  height: 180px;
+  padding: 0 30px;
+  background: #fff;
+  position: fixed;
+  top: 80px;
+  left: 0;
+  z-index: 10;
+  -webkit-transition: all 0.25s;
+  -o-transition: all 0.25s;
+  transition: all 0.25s; }
+  .progress-box > h2 {
+    color: #9aa9ca;
+    font-size: 24px;
+    margin: 10px 0 20px; }
+  .progress-box .progress-cell {
+    height: 50px;
+    border-radius: 50px;
+    background: #f9f9f9;
+    overflow: hidden;
+    position: relative; }
+    .progress-box .progress-cell ul {
+      white-space: nowrap;
+      overflow-x: auto; }
+    .progress-box .progress-cell .progress-bg {
+      height: 50px;
+      border-radius: 50px;
+      position: absolute;
+      top: 0;
+      left: 0;
+      background: #e0e9fa; }
+    .progress-box .progress-cell li {
+      display: inline-block;
+      height: 50px;
+      text-align: center;
+      line-height: 50px;
+      position: relative;
+      z-index: 1; }
+      .progress-box .progress-cell li p {
+        display: inline-block;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        padding: 0 20px;
+        color: #b6b5bb;
+        border-radius: 25px;
+        background: #efefef; }
+      .progress-box .progress-cell li.active p {
+        color: #5193ff;
+        background: #c5dcfe; }
+  .progress-box .progress-details {
+    padding: 20px 0;
+    overflow: hidden;
+    border-bottom: dashed 2px #c8cfd7; }
+    .progress-box .progress-details p {
+      float: left;
+      color: #c6cdd5;
+      font-size: 14px;
+      margin-right: 25px; }
+      .progress-box .progress-details p b {
+        color: #7688b8;
+        font-size: 18px;
+        font-weight: bold;
+        margin-right: 5px; }
+
+.progress-status {
+  position: fixed;
+  top: 280px;
+  right: 440px;
+  z-index: 9;
+  pointer-events: none; }
+  .progress-status li {
+    float: left;
+    font-size: 13px;
+    line-height: 13px;
+    list-style: none;
+    color: #c6cdd5;
+    margin-right: 20px; }
+    .progress-status li::before {
+      content: '';
+      display: inline-block;
+      width: 13px;
+      height: 13px;
+      margin-right: 5px;
+      border-radius: 50%;
+      vertical-align: bottom; }
+    .progress-status li.completed::before {
+      background: #00cc00; }
+    .progress-status li.conducc::before {
+      background: #ff9600; }
+    .progress-status li.delay::before {
+      background: #ff5722; }
+    .progress-status li.unfinished::before {
+      background: #efefef; }
+
+.hide-proper {
+  float: right;
+  color: #ccc;
+  font-size: 14px;
+  font-weight: normal;
+  margin-right: 20px; }
+
+.screenshot{
+  overflow: hidden;
+  padding: 10px;
+  height: 100px !important;
+  border-style: dashed !important;
+  position: relative;
+}
+.screenshot img{
+  max-width: 100%;
+}
+.screenshot > div{
+  color: #f00;
+  position: absolute;
+  right: 5px;
+  bottom: 5px;
+  font-size: 12px;
+  cursor: pointer;
+}
+.screenshot > span{
+  position: absolute;
+  left: 5px;
+  bottom: 5px;
+  font-size: 12px;
+}
