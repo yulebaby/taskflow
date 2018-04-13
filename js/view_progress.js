@@ -1,8 +1,8 @@
-var domain = "http://admin.beibeiyue.com/prestore";
-// var domain = 'http://192.168.1.109:8888/prestore';
+// var domain = "http://admin.beibeiyue.com/prestore";
+// var domainOrder = 'http://work.beibeiyue.com/prepareMission'
+var domain = 'http://192.168.1.205:8866/prestore';
+var domainOrder = 'http://192.168.1.205:8822/prepareMission';
 // var domain = 'http://tadmin.beibeiyue.cn/admin/prestore'
-// var domainOrder = 'http://192.168.1.109:9997/prepareMission';
-var domainOrder = 'http://work.beibeiyue.com/prepareMission'
 
 var initFunc = {
   /* 初始化详情信息 */
@@ -177,6 +177,12 @@ var vm = new Vue({
         this.isOrder = 2;
       } else if (this.content.step.task === '设备安装') {
         this.isOrder = 3;
+      } else if (this.content.step.task === '预售+通卡') {
+        this.isOrder = 4;
+      } else if (this.content.step.task === '店面开业') {
+        this.isOrder = 5;
+      } else if (this.content.step.task === '开业活动') {
+        this.isOrder = 6;
       } else {
         this.isOrder = false;
       }
@@ -312,9 +318,11 @@ var vm = new Vue({
         receptionId: vm.orderDetails.receptionId,
         describeContext: vm.orderDetails.describeContext,
         baseInfoJson: vm.orderDetails.baseInfo,
-        projectidLogic: vm.orderDetails.projectIdLogic.join(','),
         storeId: vm.id,
         email: vm.email
+      }
+      if (vm.isOrder && vm.isOrder < 4) {
+        params.projectidLogic = vm.orderDetails.projectIdLogic.join(',');
       }
       for (var i = 0; i < vm.orderDetails.personList.length; i++) {
         if (vm.orderDetails.personList[i].userId === vm.orderDetails.receptionId) {
