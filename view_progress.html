@@ -147,7 +147,7 @@
             <!-- 筹建 start -->
             <li v-show="isOrder">
               <div style="overflow: hidden;"><label for="">筹建协助工单</label></div>
-              <a href="javascript:;" class="create-btn" v-show="!orderItemDetails" @click="createOrderBtn">发起{{isOrder == 1 ? '水电交底' : isOrder == 2 ? '水电验收' : isOrder == 3 ? '设备安装' :  isOrder == 4 ? '门店预售' : isOrder == 5 ? '店面开业' : '开业活动'}}工单</a>
+              <a href="javascript:;" class="create-btn" v-show="!orderItemDetails" @click="createOrderBtn">发起{{isOrder == 1 ? '水电交底' : isOrder == 2 ? '水电验收' : isOrder == 3 ? '设备安装' :  isOrder == 4 ? '开业预售' : isOrder == 5 ? '开业验收' : '开业活动'}}工单</a>
               <div class="order-items" v-if="orderItemDetails">
                 <h2>工单记录</h2>
                 <h4>

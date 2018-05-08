@@ -1,4 +1,5 @@
-var domain = "http://admin.beibeiyue.com/prestore";
+// var domain = "http://admin.beibeiyue.com/prestore";
+var domain = 'http://192.168.1.205:8866/prestore';
 // var domain = 'http://tadmin.beibeiyue.cn/admin/prestore';
 
 var initFunc = {
@@ -20,6 +21,8 @@ var initFunc = {
       weChatWords: '',
       phoneWords: '',
       remark: '',
+      isSupportSheet: 2,
+      isQualityControl: 2
     }
   },
   prompt: function (text) {
@@ -40,6 +43,7 @@ var vm = new Vue({
   el: '#gojs',
   data: {
     groupId: '',
+    typeList: [],
     goId: null,
     contentShow: false,
     content: {
@@ -63,9 +67,15 @@ var vm = new Vue({
         data: params,
         dataType: 'text',
         success: function (res) {
+          var typeList = JSON.parse(res).typeList;
+          for (var l = 0; l < typeList.length; l++) {
+            vm.typeList.push(typeList[l]);
+          }
+          console.log(vm.typeList)
           var i = 0;
           function hasDiagram () {
             setTimeout(function () {
+              console.log(window['myDiagram'])
               if(window['myDiagram']){
                 myDiagram.model = go.Model.fromJson(res);
               }else{
@@ -103,6 +113,8 @@ var vm = new Vue({
             step: initFunc.setStep(),
             stepInfo: initFunc.setStepInfo()
           };
+          this.content.stepInfo.isSupportSheet = this.content.stepInfo.isSupportSheet || 2;
+          this.content.stepInfo.isQualityControl = this.content.stepInfo.isQualityControl || 2;
           this.content.step.task = json.nodeDataArray[i].text ? json.nodeDataArray[i].text : json.nodeDataArray[i].category == 'oneComment' ? '主线任务' : '支线任务';
         }
       }
@@ -144,13 +156,17 @@ var vm = new Vue({
         for(var q in this.content.stepInfo){
           params['stepInfo.'+q] = this.content.stepInfo[q]
         }
-        $.ajax({
-          url: domain + '/saveStepInfo.html',
-          type: 'post',
-          data: params,
-          dataType: 'json',
-          success: function (res) {}
-        })
+        if (params['stepInfo.isSupportSheet'] == 1 && !params['stepInfo.typeCode']) {
+          alert('请选择工单类型');
+        } else {
+          $.ajax({
+            url: domain + '/saveStepInfo.html',
+            type: 'post',
+            data: params,
+            dataType: 'json',
+            success: function (res) {}
+          })
+        }
       }
 
     },

@@ -178,7 +178,7 @@ body {
         font-size: 14px;
         font-weight: bold;
         vertical-align: top; }
-      .task-properties .task-proper-cell > div > ul > li input,
+      .task-properties .task-proper-cell > div > ul > li input[type="text"],
       .task-properties .task-proper-cell > div > ul > li textarea,
       .screenshot {
         display: block;

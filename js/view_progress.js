@@ -1,8 +1,9 @@
 // var domain = "http://admin.beibeiyue.com/prestore";
 // var domainOrder = 'http://work.beibeiyue.com/prepareMission'
-var domain = 'http://192.168.1.205:8866/prestore';
-var domainOrder = 'http://192.168.1.205:8822/prepareMission';
-// var domain = 'http://tadmin.beibeiyue.cn/admin/prestore'
+// var domain = 'http://192.168.1.205:8866/prestore';
+// var domainOrder = 'http://192.168.1.205:8822/prepareMission';
+var domain = 'http://tadmin.beibeiyue.cn/admin/prestore'
+var domainOrder = 'http://twork.beibeiyue.cn/prepareMission'
 
 var initFunc = {
   /* 初始化详情信息 */
@@ -177,7 +178,7 @@ var vm = new Vue({
         this.isOrder = 2;
       } else if (this.content.step.task === '设备安装') {
         this.isOrder = 3;
-      } else if (this.content.step.task === '预售+通卡') {
+      } else if (this.content.step.task === '预售' || this.content.step.task === '预售+通卡') {
         this.isOrder = 4;
       } else if (this.content.step.task === '店面开业') {
         this.isOrder = 5;
@@ -377,7 +378,8 @@ var vm = new Vue({
         id: vm.orderItemDetails.id,
         userName: vm.orderDetails.userName
       };
-      window.open('http://gd.beibeiyue.com/#/login?userInfo=' + JSON.stringify(obj), '_blank')
+      // window.open('http://gd.beibeiyue.com/#/login?userInfo=' + JSON.stringify(obj), '_blank');
+      window.open('http://192.168.1.220:8888/#/login?userInfo=' + JSON.stringify(obj), '_blank');
     }
   },
   filters: {

@@ -34,7 +34,6 @@
             <li class="active"><label for="task">任务名称</label><input type="text" id="task" v-model="content.step.task"></li>
             <li v-show="!isThread"><label for="planDays">任务天数</label><input onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')" type="text" id="planDays" v-model="content.step.planDays"></li>
             <li v-show="!isThread">
-              <!-- <label for="workDetail">工作内容</label><textarea id="workDetail" v-model="content.stepInfo.workDetail"></textarea> -->
               <label for="workDetail">注意事项</label><textarea id="workDetail" v-model="content.stepInfo.workDetail"></textarea>
             </li>
             <li v-show="!isThread">
@@ -43,7 +42,6 @@
             <li v-show="!isThread">
               <label for="phoneWords">电话话术</label><textarea id="phoneWords" v-model="content.stepInfo.phoneWords"></textarea>
             </li>
-            <!-- <li v-show="!isThread"><label for="remark">注意事项</label><textarea id="remark" v-model="content.stepInfo.remark"></textarea></li> -->
             <li v-show="!isThread" class="file-box">
               <div>
                 <label for="">发送材料</label>
@@ -60,6 +58,20 @@
             </li>
             <li v-show="!isThread">
               <label for="receiveFile">反馈材料</label><textarea id="receiveFile" v-model="content.stepInfo.receiveFile"></textarea>
+            </li>
+            <li v-show="!isThread">
+              是否支持发起工单:  <input type="radio" style="vertical-align: middle;" :value="1" v-model="content.stepInfo.isSupportSheet"> 支持
+              <input type="radio" style="vertical-align: middle;" :value="2" v-model="content.stepInfo.isSupportSheet" > 不支持
+            </li>
+            <li v-show="!isThread && content.stepInfo.isSupportSheet == 1">
+              选择工单类型 
+              <select style="height: 28px;width: 200px;vertical-align: unset;" v-model="content.stepInfo.typeCode">
+                <option v-for="option in typeList" :value="option.typeCode">{{ option.typeName }}</option>
+              </select>
+            </li>
+            <li v-show="!isThread && content.stepInfo.isSupportSheet == 1">
+              是否给品控发送工单:  <input type="radio" style="vertical-align: middle;" :value="1" v-model="content.stepInfo.isQualityControl"> 发送
+              <input type="radio" style="vertical-align: middle;" :value="2" v-model="content.stepInfo.isQualityControl" > 不发送
             </li>
           </ul>
         </div>
