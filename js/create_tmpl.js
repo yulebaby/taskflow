@@ -71,7 +71,6 @@ var vm = new Vue({
           for (var l = 0; l < typeList.length; l++) {
             vm.typeList.push(typeList[l]);
           }
-          console.log(vm.typeList)
           var i = 0;
           function hasDiagram () {
             setTimeout(function () {

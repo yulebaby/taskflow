@@ -1,9 +1,9 @@
 // var domain = "http://admin.beibeiyue.com/prestore";
 // var domainOrder = 'http://work.beibeiyue.com/prepareMission'
-// var domain = 'http://192.168.1.205:8866/prestore';
-// var domainOrder = 'http://192.168.1.205:8822/prepareMission';
-var domain = 'http://tadmin.beibeiyue.cn/admin/prestore'
-var domainOrder = 'http://twork.beibeiyue.cn/prepareMission'
+var domain = 'http://192.168.1.205:8866/prestore';
+var domainOrder = 'http://192.168.1.205:8822/mission';
+// var domain = 'http://tadmin.beibeiyue.cn/admin/prestore'
+// var domainOrder = 'http://twork.beibeiyue.cn/prepareMission'
 
 var initFunc = {
   /* 初始化详情信息 */
@@ -73,7 +73,12 @@ var vm = new Vue({
       baseInfo: {},
       projectName: ''
     },
-    submitOrderLoading: false
+    submitOrderLoading: false,
+    typeList: [],
+    typeName: null,
+    typeCode: null,
+    isQualityControl: null,
+    token: null
   },
   mounted: function () {
     this.id = initFunc.getQueryString('id');
@@ -89,6 +94,10 @@ var vm = new Vue({
         data: params,
         dataType: 'text',
         success: function (res) {
+          var typeList = JSON.parse(res).typeList;
+          for (var l = 0; l < typeList.length; l++) {
+            vm.typeList.push(typeList[l]);
+          }
           var res = JSON.parse(res);
           for(var i = 0; i < res.nodeDataArray.length; i++){
             if(res.nodeDataArray[i].status == 0){
@@ -171,25 +180,38 @@ var vm = new Vue({
           break;
         }
       }
-      /* ----------------------------- 筹建二期 ----------------------------- */
-      if (this.content.step.task === '图纸完成，施工资料发送') {
-        this.isOrder = 1;
-      } else if (this.content.step.task === '再次提醒施工前水电路问题') {
-        this.isOrder = 2;
-      } else if (this.content.step.task === '设备安装') {
-        this.isOrder = 3;
-      } else if (this.content.step.task === '预售' || this.content.step.task === '预售+通卡') {
-        this.isOrder = 4;
-      } else if (this.content.step.task === '店面开业') {
-        this.isOrder = 5;
-      } else if (this.content.step.task === '开业活动') {
-        this.isOrder = 6;
-      } else {
-        this.isOrder = false;
-      }
-      if (this.isOrder) {
+      /* ----------------------------- 筹建三期 ----------------------------- */
+
+      if (this.content.stepInfo.isSupportSheet == 1) {
+        this.typeCode = this.content.stepInfo.typeCode;
+        this.isQualityControl = this.content.stepInfo.isQualityControl;
+        for (var i = 0; i < this.typeList.length; i++) {
+          if (this.typeList[i].typeCode == this.typeCode) {
+            this.typeName = this.typeList[i].typeName;
+          }
+        }
         this.getOrderItemsDetails();
       }
+
+
+      // if (this.content.step.task === '图纸完成，施工资料发送') {
+      //   this.isOrder = 1;
+      // } else if (this.content.step.task === '再次提醒施工前水电路问题') {
+      //   this.isOrder = 2;
+      // } else if (this.content.step.task === '设备安装') {
+      //   this.isOrder = 3;
+      // } else if (this.content.step.task === '预售' || this.content.step.task === '预售+通卡') {
+      //   this.isOrder = 4;
+      // } else if (this.content.step.task === '店面开业') {
+      //   this.isOrder = 5;
+      // } else if (this.content.step.task === '开业活动') {
+      //   this.isOrder = 6;
+      // } else {
+      //   this.isOrder = false;
+      // }
+      // if (this.isOrder) {
+      //   this.getOrderItemsDetails();
+      // }
     },
     /* 保存任务详情 */
     nodeSave: function (bool) {
@@ -295,7 +317,8 @@ var vm = new Vue({
         type: 'post',
         data: {
           storeId: vm.id,
-          classType: vm.isOrder,
+          email: vm.email,
+          typeCode: vm.typeCode,
           token: '7e62a523c71b5c6468b2'
         },
         dataType: 'json',
@@ -312,7 +335,7 @@ var vm = new Vue({
       if (new Date(vm.orderDetails.expectTimeStart).getTime() > new Date(vm.orderDetails.expectTime).getTime()) {alert('开始时间不能大于结束时间');return;}
       this.submitOrderLoading = true;
       var params = {
-        name: vm.orderDetails.baseInfo.storeName,
+        name: vm.orderDetails.missionName,
         ascriptionProId: vm.orderDetails.ascriptionProId,
         expectTimeStart: vm.orderDetails.expectTimeStart,
         expectTime: vm.orderDetails.expectTime,
@@ -320,10 +343,10 @@ var vm = new Vue({
         describeContext: vm.orderDetails.describeContext,
         baseInfoJson: vm.orderDetails.baseInfo,
         storeId: vm.id,
-        email: vm.email
-      }
-      if (vm.isOrder && vm.isOrder < 4) {
-        params.projectidLogic = vm.orderDetails.projectIdLogic.join(',');
+        email: vm.email,
+        typeCode: vm.typeCode,
+        isQualityControl: vm.isQualityControl,
+        projectidLogic: vm.orderDetails.projectIdLogic.join(',')
       }
       for (var i = 0; i < vm.orderDetails.personList.length; i++) {
         if (vm.orderDetails.personList[i].userId === vm.orderDetails.receptionId) {
@@ -331,10 +354,10 @@ var vm = new Vue({
         }
       }
       $.ajax({
-        url: domainOrder + '/createMissionPreparation',
+        url: domainOrder + '/add',
         data: {
           paramJson: JSON.stringify(params),
-          token: '7e62a523c71b5c6468b2'
+          token: vm.orderDetails.token
         },
         type: 'post',
         dataType: 'json',
@@ -356,7 +379,7 @@ var vm = new Vue({
       $.ajax({
         url: domainOrder + '/missionPreparationDetail',
         data: {
-          paramJson: JSON.stringify({ storeId: vm.id, classType: vm.isOrder, mail: vm.email }),
+          paramJson: JSON.stringify({ storeId: vm.id, typeCode: vm.typeCode, mail: vm.email }),
           token: '7e62a523c71b5c6468b2'
         },
         type: 'post',
@@ -369,17 +392,16 @@ var vm = new Vue({
       })
     },
     openOrder: function () {
-      console.log(vm.orderItemDetails)
       var obj = {
         token: '7e62a523c71b5c6468b2',
         userId: vm.orderItemDetails.userId,
         storeId: vm.orderItemDetails.storeId,
-        classType: vm.isOrder,
+        typeCode: vm.typeCode,
         id: vm.orderItemDetails.id,
         userName: vm.orderDetails.userName
       };
       // window.open('http://gd.beibeiyue.com/#/login?userInfo=' + JSON.stringify(obj), '_blank');
-      window.open('http://192.168.1.220:8888/#/login?userInfo=' + JSON.stringify(obj), '_blank');
+      window.open('http://192.168.1.117:8888/#/login?userInfo=' + JSON.stringify(obj), '_blank');
     }
   },
   filters: {

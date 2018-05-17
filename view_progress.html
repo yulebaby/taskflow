@@ -145,9 +145,9 @@
             <li v-show="!isStartCom && !isEndCom"><label for="planComplete">计划完成</label><input type="text" v-model="content.step.planComplete" readonly id="planComplete" disabled></li>
 
             <!-- 筹建 start -->
-            <li v-show="isOrder">
+            <li v-show="content.stepInfo.isSupportSheet == 1">
               <div style="overflow: hidden;"><label for="">筹建协助工单</label></div>
-              <a href="javascript:;" class="create-btn" v-show="!orderItemDetails" @click="createOrderBtn">发起{{isOrder == 1 ? '水电交底' : isOrder == 2 ? '水电验收' : isOrder == 3 ? '设备安装' :  isOrder == 4 ? '开业预售' : isOrder == 5 ? '开业验收' : '开业活动'}}工单</a>
+              <a href="javascript:;" class="create-btn" v-show="!orderItemDetails" @click="createOrderBtn">发起{{typeName}}工单</a>
               <div class="order-items" v-if="orderItemDetails">
                 <h2>工单记录</h2>
                 <h4>
@@ -187,7 +187,7 @@
             </li>
             <li>
               <label for="">工单名称</label>
-              <input type="text" disabled v-model="orderDetails.baseInfo.storeName">
+              <input type="text" disabled v-model="orderDetails.missionName">
             </li>
             <li>
               <label for="">联系人</label>
@@ -195,7 +195,7 @@
             </li>
             <li>
               <label for="">工单类别</label>
-              <input type="text" disabled v-model="orderDetails.projectName">
+              <input type="text" disabled v-model="typeName">
             </li>
             <li>
               <label for="">接收人</label>
