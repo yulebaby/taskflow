@@ -1,5 +1,5 @@
-// var domain = "http://admin.beibeiyue.com/prestore";
-var domain = 'http://192.168.1.205:8866/prestore';
+var domain = "http://admin.beibeiyue.com/prestore";
+// var domain = 'http://192.168.1.205:8866/prestore';
 // var domain = 'http://tadmin.beibeiyue.cn/admin/prestore';
 
 var initFunc = {

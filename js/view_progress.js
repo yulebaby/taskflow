@@ -1,7 +1,7 @@
-// var domain = "http://admin.beibeiyue.com/prestore";
-// var domainOrder = 'http://work.beibeiyue.com/prepareMission'
-var domain = 'http://192.168.1.205:8866/prestore';
-var domainOrder = 'http://192.168.1.205:8822/mission';
+var domain = "http://admin.beibeiyue.com/prestore";
+var domainOrder = 'http://work.beibeiyue.com/prepareMission'
+// var domain = 'http://192.168.1.205:8866/prestore';
+// var domainOrder = 'http://192.168.1.205:8822/mission';
 // var domain = 'http://tadmin.beibeiyue.cn/admin/prestore'
 // var domainOrder = 'http://twork.beibeiyue.cn/prepareMission'
 
@@ -78,7 +78,7 @@ var vm = new Vue({
     typeName: null,
     typeCode: null,
     isQualityControl: null,
-    token: null
+    token: ''
   },
   mounted: function () {
     this.id = initFunc.getQueryString('id');
@@ -86,7 +86,8 @@ var vm = new Vue({
     if(this.id){
       var params = {
         type: 1,
-        id: this.id
+        id: this.id,
+        email: this.email
       }
       $.ajax({
         url: domain + '/flowChart.html',
@@ -99,6 +100,7 @@ var vm = new Vue({
             vm.typeList.push(typeList[l]);
           }
           var res = JSON.parse(res);
+          vm.token = res.token;
           for(var i = 0; i < res.nodeDataArray.length; i++){
             if(res.nodeDataArray[i].status == 0){
               res.nodeDataArray[i].category = 'unfinished';
@@ -319,7 +321,7 @@ var vm = new Vue({
           storeId: vm.id,
           email: vm.email,
           typeCode: vm.typeCode,
-          token: '7e62a523c71b5c6468b2'
+          token: vm.token
         },
         dataType: 'json',
         success: function (res) {
@@ -376,11 +378,12 @@ var vm = new Vue({
       })
     },
     getOrderItemsDetails: function () {
+      console.log(vm.token)
       $.ajax({
         url: domainOrder + '/missionPreparationDetail',
         data: {
           paramJson: JSON.stringify({ storeId: vm.id, typeCode: vm.typeCode, mail: vm.email }),
-          token: '7e62a523c71b5c6468b2'
+          token: vm.token
         },
         type: 'post',
         dataType: 'json',
@@ -393,15 +396,16 @@ var vm = new Vue({
     },
     openOrder: function () {
       var obj = {
-        token: '7e62a523c71b5c6468b2',
+        token: vm.token,
         userId: vm.orderItemDetails.userId,
         storeId: vm.orderItemDetails.storeId,
         typeCode: vm.typeCode,
         id: vm.orderItemDetails.id,
-        userName: vm.orderDetails.userName
+        userName: vm.orderItemDetails.userName
       };
-      // window.open('http://gd.beibeiyue.com/#/login?userInfo=' + JSON.stringify(obj), '_blank');
-      window.open('http://192.168.1.117:8888/#/login?userInfo=' + JSON.stringify(obj), '_blank');
+      console.log(obj, vm.orderItemDetails)
+      window.open('http://gd.beibeiyue.com/#/login?userInfo=' + JSON.stringify(obj), '_blank');
+      // window.open('http://192.168.1.185:8888/#/login?userInfo=' + JSON.stringify(obj), '_blank');
     }
   },
   filters: {
