@@ -1,9 +1,9 @@
 var domain = "http://admin.beibeiyue.com/prestore";
-var domainOrder = 'http://work.beibeiyue.com/prepareMission'
-// var domain = 'http://192.168.1.205:8866/prestore';
-// var domainOrder = 'http://192.168.1.205:8822/mission';
+var domainOrder = 'http://work.beibeiyue.com/mission'
+// var domain = 'http://192.168.1.207:8888/prestore';
+// var domainOrder = 'http://192.168.1.207:8080/mission';
 // var domain = 'http://tadmin.beibeiyue.cn/admin/prestore'
-// var domainOrder = 'http://twork.beibeiyue.cn/prepareMission'
+// var domainOrder = 'http://twork.beibeiyue.cn/mission'
 
 var initFunc = {
   /* 初始化详情信息 */
@@ -241,7 +241,9 @@ var vm = new Vue({
       // this.contentShow = false;
       /* 如果 groupId 存在则直接保存到服务器, 否则暂存在任务六中 */
 
-      var params = {};
+      var params = {
+        stepStatus: 1
+      };
       for(var q in this.content.step){
         params['step.'+q] = this.content.step[q];
         if(q == 'planDays'){params['step.'+q] = Number(this.content.step[q])}
@@ -249,6 +251,7 @@ var vm = new Vue({
       for(var q in this.content.stepInfo){
         params['stepInfo.'+q] = this.content.stepInfo[q]
       }
+      params.source = 1;
       $.ajax({
         url: domain + '/saveStepInfo.html',
         type: 'post',

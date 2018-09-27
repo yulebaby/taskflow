@@ -60,8 +60,8 @@
               <label for="receiveFile">反馈材料</label><textarea id="receiveFile" v-model="content.stepInfo.receiveFile"></textarea>
             </li>
             <li v-show="!isThread">
-              是否支持发起工单:  <input type="radio" style="vertical-align: middle;" :value="1" v-model="content.stepInfo.isSupportSheet"> 支持
-              <input type="radio" style="vertical-align: middle;" :value="2" v-model="content.stepInfo.isSupportSheet" > 不支持
+              是否支持发起工单:  <input type="radio" name="isSupportSheet" style="vertical-align: middle;" :value="1" v-model="content.stepInfo.isSupportSheet"> 支持
+              <input type="radio" name="isSupportSheet" style="vertical-align: middle;" :value="2" v-model="content.stepInfo.isSupportSheet" > 不支持
             </li>
             <li v-show="!isThread && content.stepInfo.isSupportSheet == 1">
               选择工单类型 

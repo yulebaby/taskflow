@@ -1,5 +1,5 @@
 var domain = "http://admin.beibeiyue.com/prestore";
-// var domain = 'http://192.168.1.205:8866/prestore';
+// var domain = 'http://192.168.1.207:8888/prestore';
 // var domain = 'http://tadmin.beibeiyue.cn/admin/prestore';
 
 var initFunc = {
@@ -147,7 +147,9 @@ var vm = new Vue({
       /* 如果 groupId 存在则直接保存到服务器, 否则暂存在任务流中 */
 
       if(this.groupId && isRequset){
-        var params = {};
+        var params = {
+          stepStatus: 0
+        };
         for(var q in this.content.step){
           params['step.'+q] = this.content.step[q];
           if(q == 'planDays'){params['step.'+q] = Number(this.content.step[q])}
@@ -158,6 +160,7 @@ var vm = new Vue({
         if (params['stepInfo.isSupportSheet'] == 1 && !params['stepInfo.typeCode']) {
           alert('请选择工单类型');
         } else {
+          params.source = 0;
           $.ajax({
             url: domain + '/saveStepInfo.html',
             type: 'post',
@@ -171,6 +174,7 @@ var vm = new Vue({
     },
     /* 保存任务流 */
     save: function () {
+      if (!confirm('点击确定，所有节点将不支持发工单，是否保存')) { return; }
       var json = JSON.parse(myDiagram.model.toJson());
       var nodeData = json.nodeDataArray,
           nodeLink = json.linkDataArray;
